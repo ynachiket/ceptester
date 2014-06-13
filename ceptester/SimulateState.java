@@ -46,12 +46,20 @@ public class SimulateState {
 			int finalIndex, int[][] observationsMap) {
 		
 		StateChange stateChangeInstance = new StateChange();
+		String [] stateChangeSequence = new String[(finalIndex - initialIndex) + 1];
+		int i = 0;
 		
 		String initialState = getState(consecutiveCount, consistencyLevel, initialIndex, observationsMap);
 		String finalState = getState(consecutiveCount, consistencyLevel, finalIndex, observationsMap);
 		
 		stateChangeInstance.setInitialState(initialState);
 		stateChangeInstance.setFinalState(finalState);
+		
+		for (int x = initialIndex; x <= finalIndex; x++) {
+			stateChangeSequence[i] = getState(consecutiveCount, consistencyLevel, x, observationsMap);
+			i++;
+		}
+		stateChangeInstance.setstateChangeSequence(stateChangeSequence);
 		
 		return stateChangeInstance;	
 		

@@ -96,5 +96,22 @@ public class SimuateStateTest {
 		assertEquals("WARNING", state.getFinalState());
 	}
 	
+	@Test
+	public void testStateChangeSequenceForALLForConsecutiveCount3() {
+		SimulateState simulatestate = new SimulateState(); 
+        StateChange state;
+        int observationsMap [][] = {{1, 1, 1, 1, 1, 1 },
+        		                   {1, 1, 1, 2, 2, 2},
+        		                   {1, 1, 1, 2, 2, 2},
+        		                   {1, 1, 2, 2, 2, 2}};
+
+		state = simulatestate.getStateChange(3, "Quorum", 2, 5, observationsMap);	
+		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
+		for (int i = 0; i< state.getstateChangeSequence().length; i++){
+			System.out.println(state.getstateChangeSequence()[i]);
+		}
+		assertEquals("OK", state.getInitialState());
+		assertEquals("WARNING", state.getFinalState());
+	}
 	
 }
