@@ -29,13 +29,16 @@ public class SimulateState {
 			return getStateForPluralConsecutiveCount(consecutiveCount, consistencyLevel,
 					index, observationsMap);
 		}
-
+       
+		counterValues = getCounterValuesAtIndex(index, observationsMap);
+		
 		if (consistencyLevel.equalsIgnoreCase("All")) {
-			state = getStateForAll(consecutiveCount, consistencyLevel, index,
+			
+			state = getStateForAll(consecutiveCount, consistencyLevel, index, counterValues,
 					observationsMap);
 
 		} else if (consistencyLevel.equalsIgnoreCase("Quorum")) {
-			state = getStateForQuorum(consecutiveCount, consistencyLevel, index,
+			state = getStateForQuorum(consecutiveCount, consistencyLevel, index, counterValues,
 					observationsMap);
 
 		}
@@ -45,13 +48,11 @@ public class SimulateState {
 	}
 
 	private String getStateForQuorum(int consecutiveCount, String method,
-			int index, int[][] observationsMap) {
+			int index, HashMap<String, Integer> counterValues, int[][] observationsMap) {
 
 		int monitoringZones = observationsMap.length;
 		int quorumCount = monitoringZones / 2 + 1;
 		String state = null;
-
-		counterValues = getCounterValuesAtIndex(index, observationsMap);
 
 		for (Entry<String, Integer> entry : counterValues.entrySet()) {
 			if (entry.getValue() >= quorumCount) {
@@ -65,12 +66,10 @@ public class SimulateState {
 
 
 	private String getStateForAll(int consecutiveCount, String method,
-			int index, int[][] observationsMap) {
+			int index, HashMap<String, Integer> counterValues, int[][] observationsMap) {
 		
 		int monitoringZones = observationsMap.length;
 		String state = null;
-
-		counterValues = getCounterValuesAtIndex(index, observationsMap);
 
 		for (Entry<String, Integer> entry : counterValues.entrySet()) {
 			if (entry.getValue() == monitoringZones) {
@@ -84,27 +83,57 @@ public class SimulateState {
 	private HashMap<String, Integer> getCounterValuesAtIndex(int index,
 			int[][] observationsMap) {
 		
-		for (int j = 0; j < observationsMap.length; j++) {
-
-			if (observationsMap[j][index] == 1) {
-				counterValues.put("OK", counterValues.get("OK") + 1);
-			} else if (observationsMap[j][index] == 2) {
-				counterValues.put("Warning", counterValues.get("Warning") + 1);
-			} else if (observationsMap[j][index] == 3) {
-				counterValues
-						.put("Critical", counterValues.get("Critical") + 1);
-			}
+		for (int j = 0; j < observationsMap.length; j++) {			
+			populateCounterValues(index, j, observationsMap);
 		}
 		return counterValues;
 	}
 	
 
+	private void populateCounterValues(int index, int j, int[][] observationsMap) {
+		if (observationsMap[j][index] == 1) {
+			counterValues.put("OK", counterValues.get("OK") + 1);
+		} else if (observationsMap[j][index] == 2) {
+			counterValues.put("Warning", counterValues.get("Warning") + 1);
+		} else if (observationsMap[j][index] == 3) {
+			counterValues.put("Critical", counterValues.get("Critical") + 1);
+		}
+	
+	}
 	private String getStateForPluralConsecutiveCount(int consecutiveCount,
 			String consistencyLevel, int index, int[][] observationsMap) {
-		//TODO
 		
+		int[] consecutiveObservations = new int[consecutiveCount];
+		String state = null;
+		
+		for (int j = 0; j < observationsMap.length; j++) {
+			for (int m = 0; m < consecutiveCount; m++) {
+				consecutiveObservations[m] = observationsMap[j][index - m];				
+			}
+			if (isArrayConsistsSameValues(consecutiveObservations)) {
+				populateCounterValues(index, j, observationsMap);	
+			}
+			if (consistencyLevel.equalsIgnoreCase("All")) {
+				state = getStateForAll(consecutiveCount, consistencyLevel, index, counterValues,
+						observationsMap);
 
-		return null;
+			} else if (consistencyLevel.equalsIgnoreCase("Quorum")) {
+				state = getStateForQuorum(consecutiveCount, consistencyLevel, index, counterValues,
+						observationsMap);
+			}
+		}
+
+		return state;
+	}
+	
+	private boolean isArrayConsistsSameValues(int[] consecutiveObservation) {
+		boolean flag = true;
+		int first = consecutiveObservation[0];
+		for(int i = 1; i < consecutiveObservation.length && flag; i++)
+		{
+		  if (consecutiveObservation[i] != first) flag = false;
+		}
+		return flag;
 	}
 
 }

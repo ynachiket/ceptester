@@ -36,4 +36,18 @@ public class SimuateStateTest {
 		System.out.println(state);
 		assertEquals("Critical", state);
 	}
+	
+	@Test
+	public void testALLWithConsecutiveCount3() {
+		SimulateState simulatestate = new SimulateState(); 
+        String state;
+        int observationsMap [][] = {{1, 1, 1, 2, 2},
+        		                   {1, 1, 1, 1, 1},
+        		                   {1, 1, 1, 2, 2},
+        		                   {1, 1, 1, 2, 2}};
+
+		state = simulatestate.getState(3, "ALL", 2, observationsMap);	
+		System.out.println(state);
+		assertEquals("OK", state);
+	}
 }
