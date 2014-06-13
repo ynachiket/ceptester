@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import ceptester.SimulateState;
+import ceptester.StateChange;
 
 public class SimuateStateTest {
 
@@ -49,5 +50,49 @@ public class SimuateStateTest {
 		state = simulatestate.getState(3, "ALL", 2, observationsMap);	
 		System.out.println(state);
 		assertEquals("OK", state);
+	}
+	
+	@Test
+	public void testQuorumWithConsecutiveCount3() {
+		SimulateState simulatestate = new SimulateState(); 
+        String state;
+        int observationsMap [][] = {{1, 2, 2, 2, 2},
+        		                   {1, 1, 1, 1, 1},
+        		                   {1, 2, 2, 2, 2},
+        		                   {1, 2, 2, 2, 2}};
+
+		state = simulatestate.getState(3, "Quorum", 3, observationsMap);	
+		System.out.println(state);
+		assertEquals("Warning", state);
+	}
+	
+	@Test
+	public void testStateChangeForALLForConsecutiveCount1() {
+		SimulateState simulatestate = new SimulateState(); 
+        StateChange state;
+        int observationsMap [][] = {{1, 2, 2, 2, 2},
+        		                   {1, 1, 1, 1, 1},
+        		                   {1, 2, 2, 2, 2},
+        		                   {1, 2, 2, 2, 2}};
+
+		state = simulatestate.getStateChange(1, "Quorum", 0, 2, observationsMap);	
+		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
+		assertEquals("OK", state.getInitialState());
+		assertEquals("Warning", state.getFinalState());
+	}
+	
+	@Test
+	public void testStateChangeForALLForConsecutiveCount3() {
+		SimulateState simulatestate = new SimulateState(); 
+        StateChange state;
+        int observationsMap [][] = {{1, 2, 2, 2, 2},
+        		                   {1, 1, 1, 1, 1},
+        		                   {1, 2, 2, 2, 2},
+        		                   {1, 2, 2, 2, 2}};
+
+		state = simulatestate.getStateChange(1, "Quorum", 3, 4, observationsMap);	
+		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
+		assertEquals("OK", state.getInitialState());
+		assertEquals("Warning", state.getFinalState());
 	}
 }

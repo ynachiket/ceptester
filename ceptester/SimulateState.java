@@ -11,15 +11,10 @@ public class SimulateState {
     public SimulateState() {
     	
 		counterValues.put("OK", 0);
-		counterValues.put("Warning", 0);
-		counterValues.put("Critical", 0);
+		counterValues.put("WARNING", 0);
+		counterValues.put("CRITICAL", 0);
     }
-	// 1 OK , 2 Warn, 3 Critical
 
-	/*
-	 * int observationsMap [][]= {{1, 1, 2, 2, 2}, {1, 1, 1, 1, 1}, {1, 1, 1, 2,
-	 * 2}, {1, 1, 1, 2, 2}};
-	 */
 	public String getState(int consecutiveCount, String consistencyLevel, int index,
 			int[][] observationsMap) {
 
@@ -46,6 +41,48 @@ public class SimulateState {
 		return state;
 
 	}
+	
+	public StateChange getStateChange(int consecutiveCount, String consistencyLevel, int initialIndex,
+			int finalIndex, int[][] observationsMap) {
+		
+		StateChange stateChangeInstance = new StateChange();
+		
+		String initialState = getState(consecutiveCount, consistencyLevel, initialIndex, observationsMap);
+		String finalState = getState(consecutiveCount, consistencyLevel, finalIndex, observationsMap);
+		
+		stateChangeInstance.setInitialState(initialState);
+		stateChangeInstance.setFinalState(finalState);
+		
+		return stateChangeInstance;	
+		
+	}
+	
+	private String getStateForPluralConsecutiveCount(int consecutiveCount,
+			String consistencyLevel, int index, int[][] observationsMap) {
+		
+		int[] consecutiveObservations = new int[consecutiveCount];
+		String state = null;
+		
+		for (int j = 0; j < observationsMap.length; j++) {
+			for (int m = 0; m < consecutiveCount; m++) {
+				consecutiveObservations[m] = observationsMap[j][index - m];				
+			}
+			if (isArrayConsistsSameValues(consecutiveObservations)) {
+				populateCounterValues(index, j, observationsMap);	
+			}
+			if (consistencyLevel.equalsIgnoreCase("All")) {
+				state = getStateForAll(consecutiveCount, consistencyLevel, index, counterValues,
+						observationsMap);
+
+			} else if (consistencyLevel.equalsIgnoreCase("Quorum")) {
+				state = getStateForQuorum(consecutiveCount, consistencyLevel, index, counterValues,
+						observationsMap);
+			}
+		}
+
+		return state;
+	}
+	
 
 	private String getStateForQuorum(int consecutiveCount, String method,
 			int index, HashMap<String, Integer> counterValues, int[][] observationsMap) {
@@ -62,7 +99,6 @@ public class SimulateState {
 
 		return state;
 	}
-
 
 
 	private String getStateForAll(int consecutiveCount, String method,
@@ -94,38 +130,13 @@ public class SimulateState {
 		if (observationsMap[j][index] == 1) {
 			counterValues.put("OK", counterValues.get("OK") + 1);
 		} else if (observationsMap[j][index] == 2) {
-			counterValues.put("Warning", counterValues.get("Warning") + 1);
+			counterValues.put("WARNING", counterValues.get("WARNING") + 1);
 		} else if (observationsMap[j][index] == 3) {
-			counterValues.put("Critical", counterValues.get("Critical") + 1);
+			counterValues.put("CRITICAL", counterValues.get("CRITICAL") + 1);
 		}
 	
 	}
-	private String getStateForPluralConsecutiveCount(int consecutiveCount,
-			String consistencyLevel, int index, int[][] observationsMap) {
-		
-		int[] consecutiveObservations = new int[consecutiveCount];
-		String state = null;
-		
-		for (int j = 0; j < observationsMap.length; j++) {
-			for (int m = 0; m < consecutiveCount; m++) {
-				consecutiveObservations[m] = observationsMap[j][index - m];				
-			}
-			if (isArrayConsistsSameValues(consecutiveObservations)) {
-				populateCounterValues(index, j, observationsMap);	
-			}
-			if (consistencyLevel.equalsIgnoreCase("All")) {
-				state = getStateForAll(consecutiveCount, consistencyLevel, index, counterValues,
-						observationsMap);
 
-			} else if (consistencyLevel.equalsIgnoreCase("Quorum")) {
-				state = getStateForQuorum(consecutiveCount, consistencyLevel, index, counterValues,
-						observationsMap);
-			}
-		}
-
-		return state;
-	}
-	
 	private boolean isArrayConsistsSameValues(int[] consecutiveObservation) {
 		boolean flag = true;
 		int first = consecutiveObservation[0];
