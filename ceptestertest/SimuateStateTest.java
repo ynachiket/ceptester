@@ -105,9 +105,6 @@ public class SimuateStateTest {
 		state = simulatestate.getStateChangeSequence(3, "ALL", 2, 5, observationsMap);	
 		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
 		String [] sequence = state.getstateChangeSequence();
-		for (int i = 0; i < sequence.length; i++) {
-			System.out.println(sequence[i]);
-		}
 		assertEquals("OK", sequence[0]);
 		assertEquals("NO-OP", sequence[1]);
 		assertEquals("NO-OP", sequence[2]);
@@ -126,14 +123,48 @@ public class SimuateStateTest {
 		state = simulatestate.getStateChangeSequence(1, "ALL", 1, 5, observationsMap);	
 		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
 		String [] sequence = state.getstateChangeSequence();
-		for (int i = 0; i < sequence.length; i++) {
-			System.out.println(sequence[i]);
-		}
 		assertEquals("OK", sequence[0]);
 		assertEquals("NO-OP", sequence[1]);
 		assertEquals("WARNING", sequence[2]);
 		assertEquals("OK", sequence[3]);
 		assertEquals("WARNING", sequence[4]);
+	}
+	
+	@Test
+	public void testStateChangeSequenceForQuorumForConsecutiveCount3() {
+		SimulateState simulatestate = new SimulateState(); 
+        StateChange state;
+        int observationsMap [][] = {{1, 1, 2, 2, 2, 2},
+        		                   {1, 1, 1, 2, 2, 2},
+        		                   {1, 1, 1, 2, 2, 2},
+        		                   {1, 1, 1, 2, 2, 1}};
+
+		state = simulatestate.getStateChangeSequence(3, "QUORUM", 2, 5, observationsMap);	
+		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
+		String [] sequence = state.getstateChangeSequence();
+		assertEquals("OK", sequence[0]);
+		assertEquals("NO-OP", sequence[1]);
+		assertEquals("NO-OP", sequence[2]);
+		assertEquals("WARNING", sequence[3]);
+	}
+	
+	@Test
+	public void testStateChangeSequenceForQuorumForConsecutiveCount1() {
+		SimulateState simulatestate = new SimulateState(); 
+        StateChange state;
+        int observationsMap [][] = {{1, 1, 3, 2, 1, 3},
+        		                   {1, 2, 2, 2, 1, 3},
+        		                   {1, 1, 3, 2, 1, 3},
+        		                   {1, 1, 3, 2, 1, 2}};
+
+		state = simulatestate.getStateChangeSequence(1, "QUORUM", 1, 5, observationsMap);	
+		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
+		String [] sequence = state.getstateChangeSequence();
+		assertEquals("OK", sequence[0]);
+		assertEquals("CRITICAL", sequence[1]);
+		assertEquals("WARNING", sequence[2]);
+		assertEquals("OK", sequence[3]);
+		assertEquals("CRITICAL", sequence[4]);
 	}
 		
 }
