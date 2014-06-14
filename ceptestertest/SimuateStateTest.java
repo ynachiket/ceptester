@@ -107,7 +107,6 @@ public class SimuateStateTest {
 		assertEquals("OK", state.getInitialState());
 		assertEquals("WARNING", state.getFinalState());
 	}
-
 	
 	@Test
 	public void testStateChangeSequenceForALLForConsecutiveCount1() {
@@ -120,8 +119,15 @@ public class SimuateStateTest {
 
 		state = simulatestate.getStateChangeSequence(1, "ALL", 1, 5, observationsMap);	
 		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
-		assertEquals("OK", state.getInitialState());
-		assertEquals("WARNING", state.getFinalState());
+		String [] sequence = state.getstateChangeSequence();
+		for (int i = 0; i < sequence.length; i++) {
+			System.out.println(sequence[i]);
+		}
+		assertEquals("OK", sequence[0]);
+		assertEquals("NO-OP", sequence[1]);
+		assertEquals("WARNING", sequence[2]);
+		assertEquals("OK", sequence[3]);
+		assertEquals("WARNING", sequence[4]);
 	}
 		
 }

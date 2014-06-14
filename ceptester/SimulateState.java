@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 public class SimulateState {
 
 	HashMap<String, Integer> counterValues = new HashMap<String, Integer>();
+	String state;
 	
 
 	public String getState(int consecutiveCount, String consistencyLevel, int index,
@@ -14,7 +15,6 @@ public class SimulateState {
 		counterValues.put("WARNING", 0);
 		counterValues.put("CRITICAL", 0);
 
-		String state = "NO-OP";
 
 		if (consecutiveCount > 1) {
 			return getStateForPluralConsecutiveCount(consecutiveCount, consistencyLevel,
@@ -42,21 +42,12 @@ public class SimulateState {
 			int finalIndex, int[][] observationsMap) {
 		
 		StateChange stateChangeInstance = new StateChange();
-		//String [] stateChangeSequence = new String[(finalIndex - initialIndex) + 1];
-		//int i = 0;
-		
 		String initialState = getState(consecutiveCount, consistencyLevel, initialIndex, observationsMap);
 		String finalState = getState(consecutiveCount, consistencyLevel, finalIndex, observationsMap);
 		
 		stateChangeInstance.setInitialState(initialState);
 		stateChangeInstance.setFinalState(finalState);
-		/*
-		for (int x = initialIndex; x <= finalIndex; x++) {
-			stateChangeSequence[i] = getState(consecutiveCount, consistencyLevel, x, observationsMap);
-			i++;
-		}
-		stateChangeInstance.setstateChangeSequence(stateChangeSequence);
-		*/
+
 		return stateChangeInstance;	
 		
 	}
@@ -71,7 +62,6 @@ public class SimulateState {
 
 		for (int x = initialIndex; x <= finalIndex; x++) {
 			stateChangeSequence[i] = getState(consecutiveCount, consistencyLevel, x, observationsMap);
-			System.out.println("GOOD" + stateChangeSequence[i]);
 			i++;
 		}
 		stateChangeInstance.setstateChangeSequence(stateChangeSequence);
@@ -86,7 +76,6 @@ public class SimulateState {
 			String consistencyLevel, int index, int[][] observationsMap) {
 		
 		int[] consecutiveObservations = new int[consecutiveCount];
-		String state = "NO-OP";
 		
 		for (int j = 0; j < observationsMap.length; j++) {
 			for (int m = 0; m < consecutiveCount; m++) {
