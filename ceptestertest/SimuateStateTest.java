@@ -104,8 +104,14 @@ public class SimuateStateTest {
 
 		state = simulatestate.getStateChangeSequence(3, "ALL", 2, 5, observationsMap);	
 		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
-		assertEquals("OK", state.getInitialState());
-		assertEquals("WARNING", state.getFinalState());
+		String [] sequence = state.getstateChangeSequence();
+		for (int i = 0; i < sequence.length; i++) {
+			System.out.println(sequence[i]);
+		}
+		assertEquals("OK", sequence[0]);
+		assertEquals("NO-OP", sequence[1]);
+		assertEquals("NO-OP", sequence[2]);
+		assertEquals("WARNING", sequence[3]);
 	}
 	
 	@Test
