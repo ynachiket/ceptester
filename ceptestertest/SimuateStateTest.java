@@ -19,7 +19,6 @@ public class SimuateStateTest {
         		                   {1, 1, 1, 2, 2}};
 
 		state = simulatestate.getState(1, "ALL", 1, observationsMap);	
-		System.out.println(state);
 		assertEquals("OK", state);
 	}
 	
@@ -33,8 +32,7 @@ public class SimuateStateTest {
         		                   {1, 1, 1, 2, 3},
         		                   {1, 1, 1, 2, 2}};
 
-		state = simulatestate.getState(1, "Quorum", 4, observationsMap);	
-		System.out.println(state);
+		state = simulatestate.getState(1, "QUORUM", 4, observationsMap);	
 		assertEquals("CRITICAL", state);
 	}
 	
@@ -48,7 +46,6 @@ public class SimuateStateTest {
         		                   {1, 1, 1, 2, 2}};
 
 		state = simulatestate.getState(3, "ALL", 2, observationsMap);	
-		System.out.println(state);
 		assertEquals("OK", state);
 	}
 	
@@ -61,57 +58,70 @@ public class SimuateStateTest {
         		                   {1, 2, 2, 2, 2},
         		                   {1, 2, 2, 2, 2}};
 
-		state = simulatestate.getState(3, "Quorum", 3, observationsMap);	
-		System.out.println(state);
+		state = simulatestate.getState(3, "QUORUM", 3, observationsMap);	
 		assertEquals("WARNING", state);
 	}
-	
+
 	@Test
 	public void testStateChangeForALLForConsecutiveCount1() {
 		SimulateState simulatestate = new SimulateState(); 
         StateChange state;
         int observationsMap [][] = {{1, 2, 2, 2, 2},
-        		                   {1, 1, 1, 1, 1},
-        		                   {1, 2, 2, 2, 2},
+        		                   {1, 3, 2, 1, 1},
+        		                   {1, 1, 2, 2, 2},
         		                   {1, 2, 2, 2, 2}};
 
-		state = simulatestate.getStateChange(1, "Quorum", 0, 2, observationsMap);	
+		state = simulatestate.getStateChange(1, "ALL", 0, 2, observationsMap);	
+		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
+		assertEquals("OK", state.getInitialState());
+		assertEquals("WARNING", state.getFinalState());
+	}
+
+	@Test
+	public void testStateChangeForALLForConsecutiveCount3() {
+		SimulateState simulatestate = new SimulateState(); 
+        StateChange state;
+        int observationsMap [][] = {{1, 1, 1, 2, 2, 2 },
+        		                   {1, 1, 1, 2, 2, 2},
+        		                   {1, 1, 1, 2, 2, 2},
+        		                   {1, 1, 1, 2, 2, 2}};
+
+		state = simulatestate.getStateChange(3, "ALL", 2, 5, observationsMap);	
 		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
 		assertEquals("OK", state.getInitialState());
 		assertEquals("WARNING", state.getFinalState());
 	}
 	
-	@Test
-	public void testStateChangeForALLForConsecutiveCount3() {
-		SimulateState simulatestate = new SimulateState(); 
-        StateChange state;
-        int observationsMap [][] = {{1, 1, 1, 1, 1, 1 },
-        		                   {1, 1, 1, 2, 2, 2},
-        		                   {1, 1, 1, 2, 2, 2},
-        		                   {1, 1, 2, 2, 2, 2}};
-
-		state = simulatestate.getStateChange(3, "Quorum", 2, 5, observationsMap);	
-		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
-		assertEquals("OK", state.getInitialState());
-		assertEquals("WARNING", state.getFinalState());
-	}
 	
 	@Test
 	public void testStateChangeSequenceForALLForConsecutiveCount3() {
 		SimulateState simulatestate = new SimulateState(); 
         StateChange state;
-        int observationsMap [][] = {{1, 1, 1, 1, 1, 1 },
+        int observationsMap [][] = {{1, 1, 1, 2, 2, 2},
         		                   {1, 1, 1, 2, 2, 2},
         		                   {1, 1, 1, 2, 2, 2},
-        		                   {1, 1, 2, 2, 2, 2}};
+        		                   {1, 1, 1, 2, 2, 2}};
 
-		state = simulatestate.getStateChange(3, "Quorum", 2, 5, observationsMap);	
+		state = simulatestate.getStateChangeSequence(3, "ALL", 2, 5, observationsMap);	
 		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
-		for (int i = 0; i< state.getstateChangeSequence().length; i++){
-			System.out.println(state.getstateChangeSequence()[i]);
-		}
 		assertEquals("OK", state.getInitialState());
 		assertEquals("WARNING", state.getFinalState());
 	}
+
 	
+	@Test
+	public void testStateChangeSequenceForALLForConsecutiveCount1() {
+		SimulateState simulatestate = new SimulateState(); 
+        StateChange state;
+        int observationsMap [][] = {{1, 1, 3, 2, 1, 2},
+        		                   {1, 1, 2, 2, 1, 2},
+        		                   {1, 1, 3, 2, 1, 2},
+        		                   {1, 1, 3, 2, 1, 2}};
+
+		state = simulatestate.getStateChangeSequence(1, "ALL", 1, 5, observationsMap);	
+		System.out.println("State Changed from:" + state.getInitialState() + " to " + state.getFinalState());
+		assertEquals("OK", state.getInitialState());
+		assertEquals("WARNING", state.getFinalState());
+	}
+		
 }
